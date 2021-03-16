@@ -36,7 +36,7 @@ function! vimspectorpy#tmux_launcher(cmd)
     endfor
     let pane = trim(system("tmux split-window -l 10 -d -P -F '#{pane_id}' sh -c '". a:cmd .
                 \" || tmux capture-pane -S - -E - -p -t $TMUX_PANE > " . base_err_file . ".${TMUX_PANE}'"))
-    let errs_file = base_err_file . ipython_pane
+    let errs_file = base_err_file . pane
     sleep 1
     if filereadable(errs_file)
         let errs=system('cat ' . errs_file)
