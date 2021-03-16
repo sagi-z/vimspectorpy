@@ -95,11 +95,11 @@ function! vimspectorpy#update()
         throw "Please update your own directory manually (" . g:vimspectorpy_venv . ")"
     endif
     call mkdir(g:vimspectorpy_venv, "p")
-    let out = system(["python", "-m", "venv", "--clear", g:vimspectorpy_venv])
+    let out = system("python -m venv  --clear " . g:vimspectorpy_venv)
     if v:shell_error
         throw "vimspectorpy#update failed to create a virtualenv for ipython and debugpy: " . out
     endif
-    let out = system(["sh", "-c", ". " . g:vimspectorpy_venv . "/bin/activate && pip install -U ipython debugpy"])
+    let out = system(". " . g:vimspectorpy_venv . "/bin/activate && pip install -U ipython debugpy")
     if v:shell_error
         throw "vimspectorpy#update failed to install/update ipython and debugpy: " . out
     endif
@@ -113,7 +113,7 @@ function! vimspectorpy#update()
     endif
     let config_dir = config_dir . "/python"
     call mkdir(config_dir, "p")
-    let out = system(["/bin/cp", g:vimspectorpy_home . "/vimspectorpy.json", config_dir])
+    let out = system("/bin/cp " . g:vimspectorpy_home . "/vimspectorpy.json " . config_dir)
     if v:shell_error
         throw "vimspectorpy#update failed to copy vimspectorpy.json: " . out
     endif
