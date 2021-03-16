@@ -7,7 +7,7 @@ set cpo&vim
 let g:vimspectorpy#imps = {}
 
 " The chosen launcher of windows (tmux is selected automatically if under $TMUX)
-if !exists(g:vimspectorpy#launcher) || empty(g:vimspectorpy#launcher)
+if !exists("g:vimspectorpy#launcher") || empty(g:vimspectorpy#launcher)
     let g:vimspectorpy#launcher = ""
     if has("gui_running")
         if executable("xterm")
