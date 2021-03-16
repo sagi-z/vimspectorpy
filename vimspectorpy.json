@@ -1,0 +1,136 @@
+{ // This file was added by vimspector-py
+  "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json",
+  "configurations": {
+    "attach2port": {
+      "adapter": "multi-session",
+      "variables": {
+        "host": "localhost"
+      },
+      "configuration": {
+        "request": "attach"
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "",
+          "userUnhandled": ""
+        }
+      }
+    },
+    "debug this file": {
+      "adapter": "debugpy",
+      "variables": {
+        "Python": {
+          "shell": "/bin/sh -c 'if [ -z \"$$VIRTUAL_ENV\" ]; then echo $$(which python3); else echo \"$$VIRTUAL_ENV/bin/python\"; fi'"
+        }
+      },
+      "configuration": {
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "stopOnEntry": false,
+        "python": "$Python",
+        "program": "${file}",
+        "args": [ "*${CommandLineArgs}" ]
+      },
+      "breakpoints": {
+        "exception": {
+          "caught": "N",
+          "uncaught": "Y"
+        }
+      }
+    },
+    "pytest": {
+      "adapter": "debugpy",
+      "variables": {
+        "Pytest": {
+          "shell" : [ "command",  "-v", "pytest" ]
+        }
+      },
+      "configuration": {
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "stopOnEntry": false,
+        "python": "${VIRTUAL_ENV}/bin/python",
+        "program": "${Pytest}",
+        "args": [ "*${CommandLineArgs}" ]
+      },
+      "breakpoints": {
+        "exception": {
+          "caught": "N",
+          "uncaught": "Y"
+        }
+      }
+    },
+    "pytest this test file": {
+      "adapter": "debugpy",
+      "variables": {
+        "Pytest": {
+          "shell" : [ "command",  "-v", "pytest" ]
+        }
+      },
+      "configuration": {
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "stopOnEntry": false,
+        "python": "${VIRTUAL_ENV}/bin/python",
+        "program": "${Pytest}",
+        "args": [ "-v", "$file" ]
+      },
+      "breakpoints": {
+        "exception": {
+          "caught": "N",
+          "uncaught": "Y"
+        }
+      }
+    },
+    "nosetests": {
+      "adapter": "debugpy",
+      "variables": {
+        "Pytest": {
+          "shell" : [ "command",  "-v", "nose" ]
+        }
+      },
+      "configuration": {
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "stopOnEntry": false,
+        "python": "${VIRTUAL_ENV}/bin/python",
+        "program": "${Pytest}",
+        "args": [ "*${CommandLineArgs}" ]
+      },
+      "breakpoints": {
+        "exception": {
+          "caught": "N",
+          "uncaught": "Y"
+        }
+      }
+    },
+    "nosetests this test file": {
+      "adapter": "debugpy",
+      "variables": {
+        "Pytest": {
+          "shell" : [ "command",  "-v", "nose" ]
+        }
+      },
+      "configuration": {
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceRoot}",
+        "stopOnEntry": false,
+        "python": "${VIRTUAL_ENV}/bin/python",
+        "program": "${Pytest}",
+        "args": [ "-v", "$file" ]
+      },
+      "breakpoints": {
+        "exception": {
+          "caught": "N",
+          "uncaught": "Y"
+        }
+      }
+    }
+  }
+}
