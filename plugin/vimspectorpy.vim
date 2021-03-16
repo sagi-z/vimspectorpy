@@ -35,7 +35,7 @@ endfunction
 function! s:DebugpyLaunch(cmd, args, name, default_name=v:none, use_ext_venv=1, wait=1)
     call s:AssertCanWork()
     if empty(a:name)
-        let name = default_name
+        let name = a:default_name
     else
         let name = a:name
     endif
@@ -69,7 +69,7 @@ endfunction
 
 function! s:DebugpyAttach(name, default_name)
     if empty(a:name)
-        let name = default_name
+        let name = a:default_name
     else
         let name = a:name
     endif
