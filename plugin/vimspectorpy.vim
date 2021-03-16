@@ -33,16 +33,16 @@ endfunction
 
 
 function! s:DebugpyLaunch(cmd, args, name, default_name=v:none, use_ext_venv=1, wait=1)
-    call AssertCanWork()
+    call s:AssertCanWork()
     if empty(a:name)
-        name = default_name
+        let name = default_name
     else
-        name = a:name
+        let name = a:name
     endif
     if empty(name)
         throw "Must get a name to assign to this session"
     endif
-    let cb = g:vimspectorpy#imps[g:vimspectorpy#launcher]
+    let Imp = g:vimspectorpy#imps[g:vimspectorpy#launcher]
     if a:use_ext_venv
         let use_ext_venv="export PYTHONPATH=" . g:vimspectorpy_venv . " && "
     else
@@ -57,7 +57,7 @@ function! s:DebugpyLaunch(cmd, args, name, default_name=v:none, use_ext_venv=1, 
         let cmd = use_ext_venv . "python -m debugpy " . wait .  " --listen localhost:"
                     \. s:debugpy_port .  " `which " . a:cmd . "` " . a:args
         try
-            call cb(cmd)
+            call Imp(cmd)
             break
             catch /Address already in use/
                 let s:debugpy_port += 1
@@ -69,9 +69,9 @@ endfunction
 
 function! s:DebugpyAttach(name, default_name)
     if empty(a:name)
-        name = default_name
+        let name = default_name
     else
-        name = a:name
+        let name = a:name
     endif
     if empty(name)
         throw "Must get a session name to connect to"

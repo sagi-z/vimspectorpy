@@ -3,7 +3,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Registered implementations for window launchers (maps strings to function refeences)
+" Registered implementations for window launchers (maps strings to function references)
 let g:vimspectorpy#imps = {}
 
 " Allow a user prefix for commands
