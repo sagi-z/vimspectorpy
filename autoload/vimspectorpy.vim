@@ -107,7 +107,7 @@ function! vimspectorpy#update()
     endif
     let config_dir = config_dir . "/python"
     call mkdir(config_dir, "p")
-    let out=system("/bin/cp " . s:vimspector_python_home . "/vimspectorpy.json " . config_dir)
+    let out=system("/bin/cp " . g:vimspectorpy_home . "/vimspectorpy.json " . config_dir)
     if v:shell_error
         throw "vimspectorpy#update failed to copy vimspectorpy.json: " . out
     endif

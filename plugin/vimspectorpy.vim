@@ -13,9 +13,9 @@ let g:loaded_vimspector_python = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:vimspector_python_home = expand( '<sfile>:p:h:h' )
+let g:vimspectorpy_home = expand( '<sfile>:p:h:h' )
 if ! exists("g:viminspectorpy_venv")
-    let g:viminspectorpy_venv=s:vimspector_python_home . "/venv"
+    let g:viminspectorpy_venv=g:vimspectorpy_home . "/venv"
 endif
 let s:debugpy_port=6789
 
