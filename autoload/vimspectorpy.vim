@@ -95,12 +95,12 @@ endfunction
 
 function! vimspectorpy#systemlist(cmd, close_on_error=0)
     let s:shell_error = 0
-    echom a:cmd
     let buf = term_start(a:cmd, {"exit_cb": funcref("s:SystemDone")})
     let s:system_running = 1
     while s:system_running == 1
         call term_wait(buf)
     endwhile
+    let lines = getbufline(buf, 1, "$")
     if s:shell_error
         if a:close_on_error
             exe "bdel " . buf
@@ -108,7 +108,6 @@ function! vimspectorpy#systemlist(cmd, close_on_error=0)
     else
         exe "bdel " . buf
     endif
-    let lines = getbufline(buf, 1, "$")
     return lines
 endfunction
 
@@ -121,7 +120,7 @@ function! vimspectorpy#update()
     if s:shell_error
         throw "vimspectorpy#update failed to create a virtualenv for ipython and debugpy"
     endif
-    call vimspectorpy#systemlist(["sh", "-c", "source " . g:vimspectorpy_venv . "/bin/activate && pip install -U ipython debugpy"])
+    call vimspectorpy#systemlist(["sh", "-c", ". " . g:vimspectorpy_venv . "/bin/activate && pip install -U ipython debugpy"])
     if s:shell_error
         throw "vimspectorpy#update failed to install/update ipython and debugpy"
     endif

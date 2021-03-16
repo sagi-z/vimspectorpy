@@ -44,7 +44,7 @@
       "adapter": "debugpy",
       "variables": {
         "Pytest": {
-          "shell" : [ "command",  "-v", "pytest" ]
+          "shell" : [ "which", "pytest" ]
         }
       },
       "configuration": {
@@ -67,7 +67,7 @@
       "adapter": "debugpy",
       "variables": {
         "Pytest": {
-          "shell" : [ "command",  "-v", "pytest" ]
+          "shell" : [ "which",  "pytest" ]
         }
       },
       "configuration": {
@@ -89,8 +89,8 @@
     "nosetests": {
       "adapter": "debugpy",
       "variables": {
-        "Pytest": {
-          "shell" : [ "command",  "-v", "nose" ]
+        "Nosetests": {
+          "shell" : [ "which",  "nosetests" ]
         }
       },
       "configuration": {
@@ -99,7 +99,7 @@
         "cwd": "${workspaceRoot}",
         "stopOnEntry": false,
         "python": "${VIRTUAL_ENV}/bin/python",
-        "program": "${Pytest}",
+        "program": "${Nosetests}",
         "args": [ "*${CommandLineArgs}" ]
       },
       "breakpoints": {
@@ -112,8 +112,8 @@
     "nosetests this test file": {
       "adapter": "debugpy",
       "variables": {
-        "Pytest": {
-          "shell" : [ "command",  "-v", "nose" ]
+        "Nosetests": {
+          "shell" : [ "which",  "nosetests" ]
         }
       },
       "configuration": {
@@ -122,7 +122,7 @@
         "cwd": "${workspaceRoot}",
         "stopOnEntry": false,
         "python": "${VIRTUAL_ENV}/bin/python",
-        "program": "${Pytest}",
+        "program": "${Nosetests}",
         "args": [ "-v", "$file" ]
       },
       "breakpoints": {
