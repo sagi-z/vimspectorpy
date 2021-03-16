@@ -32,7 +32,7 @@ endif
 function! vimspectorpy#tmux_launcher(cmd)
     let base_err_file = "/tmp/vimspectorpy-tmux-err." . getpid()
     for f in glob(base_err_file . "/*" ,1 ,1)
-        delete(f)
+        call delete(f)
     endfor
     let pane = trim(system("tmux split-window -l 10 -d -P -F '#{pane_id}' sh -c '". a:cmd .
                 \" || tmux capture-pane -S - -E - -p -t $TMUX_PANE > " . base_err_file . ".${TMUX_PANE}'"))
@@ -54,7 +54,7 @@ let g:vimspectorpy#imps["tmux"] = function("vimspectorpy#tmux_launcher")
 function! vimspectorpy#xterm_launcher(cmd)
     let err_file = "/tmp/vimspectorpy-xterm-err." . getpid()
     if filereadable(err_file)
-        delete(err_file)
+        call delete(err_file)
     endif
     call system("xterm xterm -l -lf " . err_file . " -e sh -c '" . a:cmd .  " || echo VIMSPECTORPY_FAIL' &")
     sleep 1
@@ -76,7 +76,7 @@ let g:vimspectorpy#imps["xterm"] = function("vimspectorpy#xterm_launcher")
 function! vimspectorpy#rxvt_launcher(cmd)
     let err_file = "/tmp/vimspectorpy-rxvt-err." . getpid()
     if filereadable(err_file)
-        delete(err_file)
+        call delete(err_file)
     endif
     call system("rxvt -xrm 'URxvt.print-pipe: cat > " . err_file . "' -e sh -c '". a:cmd .
                 \' || (iPrtSc="$(echo -ne "\033[i")" && echo -n "$PrtSc")' . "' &"))
