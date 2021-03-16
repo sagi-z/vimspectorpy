@@ -95,7 +95,7 @@ function! vimspectorpy#update()
         throw "Please update your own directory manually (" . g:vimspectorpy_venv . ")"
     endif
     call mkdir(g:vimspectorpy_venv, "p")
-    let out = system("python -m venv  --clear " . g:vimspectorpy_venv)
+    let out = system("python3 -m venv  --clear " . g:vimspectorpy_venv)
     if v:shell_error
         throw "vimspectorpy#update failed to create a virtualenv for ipython and debugpy: " . out
     endif
