@@ -77,7 +77,7 @@ if !exists(":IpythonDA")
 endif
 
 if !exists(":VimspectorpyUpdate")
-    command! VimspectorpyUpdate call s:InstallUpdate()
+    command! VimspectorpyUpdate call g:vimspectorpy#update()
 endif
 
 " restore compatible option
