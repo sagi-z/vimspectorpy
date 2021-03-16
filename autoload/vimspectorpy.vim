@@ -88,12 +88,12 @@ let g:vimspectorpy#imps["rxvt"] = function("vimspectorpy#rxvt_launcher")
 
 
 function! vimspectorpy#update()
-    call mkdir(s:viminspectorpy_venv, "p")
-    let out=system("python -m venv " . s:viminspectorpy_venv)
+    call mkdir(g:viminspectorpy_venv, "p")
+    let out=system("python -m venv " . g:viminspectorpy_venv)
     if v:shell_error
         throw "vimspectorpy#update failed to create a virtualenv for ipython and debugpy: " . out
     endif
-    let out=system("source " . s:viminspectorpy_venv . "/bin/activate && pip install -U ipython debugpy")
+    let out=system("source " . g:viminspectorpy_venv . "/bin/activate && pip install -U ipython debugpy")
     if v:shell_error
         throw "vimspectorpy#update failed to install/update ipython and debugpy: " . out
     endif
