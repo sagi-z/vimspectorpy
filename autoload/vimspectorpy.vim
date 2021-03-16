@@ -48,7 +48,7 @@ let g:vimspectorpy#imps["tmux"] = function("vimspectorpy#tmux_launcher")
 " To add another launcher for 'a:cmd' in a window follow this simple guide:
 " Make sure that 'cmd' is successful or throw the error messages it generated
 " as a string.
-function! vimspector#xterm_launcher(cmd)
+function! vimspectorpy#xterm_launcher(cmd)
     let err_file = "/tmp/vimspectorpy-xterm-err." . getpid()
     if filereadable(err_file)
         delete(err_file)
@@ -63,14 +63,14 @@ function! vimspector#xterm_launcher(cmd)
         endif
     endif
 endfunction
-let g:vimspectorpy#imps["xterm"] = function("vimspector#xterm_launcher")
+let g:vimspectorpy#imps["xterm"] = function("vimspectorpy#xterm_launcher")
 
 
 " This is a simple implementation for 'rxvt' as a launcher in window.
 " To add another launcher for 'a:cmd' in a window follow this simple guide:
 " Make sure that 'cmd' is successful or throw the error messages it generated
 " as a string.
-function! vimspector#rxvt_launcher(cmd)
+function! vimspectorpy#rxvt_launcher(cmd)
     let err_file = "/tmp/vimspectorpy-rxvt-err." . getpid()
     if filereadable(err_file)
         delete(err_file)
@@ -84,7 +84,7 @@ function! vimspector#rxvt_launcher(cmd)
         throw errs
     endif
 endfunction
-let g:vimspectorpy#imps["rxvt"] = function("vimspector#rxvt_launcher")
+let g:vimspectorpy#imps["rxvt"] = function("vimspectorpy#rxvt_launcher")
 
 
 function! vimspectorpy#update()
