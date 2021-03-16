@@ -14,14 +14,14 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let g:vimspectorpy_home = expand( '<sfile>:p:h:h' )
-if ! exists("g:viminspectorpy_venv")
-    let g:viminspectorpy_venv=g:vimspectorpy_home . "/venv"
+if ! exists("g:vimspectorpy_venv")
+    let g:vimspectorpy_venv=g:vimspectorpy_home . "/venv"
 endif
 let s:debugpy_port=6789
 
 
 function! s:AssertCanWork()
-    if ! isdirectory(g:viminspectorpy_venv . '/lib')
+    if ! isdirectory(g:vimspectorpy_venv . '/lib')
         throw "Please execute VimspectorpyUpdate first"
     endif
     if has_key(g:vimspectorpy#imps, g:vimspectorpy#launcher)
@@ -32,7 +32,7 @@ endfunction
 
 function! s:Ipython()
     call AssertCanWork()
-    let cmd = "export PYTHONPATH=" . g:viminspectorpy_venv . " && python `which ipython`"
+    let cmd = "export PYTHONPATH=" . g:vimspectorpy_venv . " && python `which ipython`"
     let cb = g:vimspectorpy#imps[g:vimspectorpy#launcher]
     call cb(cmd)
 endfunction
@@ -42,7 +42,7 @@ function! s:IpythonDebugpy()
     call AssertCanWork()
     let cb = g:vimspectorpy#imps[g:vimspectorpy#launcher]
     while 1
-        let cmd = "export PYTHONPATH=" . g:viminspectorpy_venv . " && python -m debugpy --listen localhost:"
+        let cmd = "export PYTHONPATH=" . g:vimspectorpy_venv . " && python -m debugpy --listen localhost:"
                     \. s:debugpy_port .  " `which ipython`"
         try
             call cb(cmd)

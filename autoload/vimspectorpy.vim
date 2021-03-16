@@ -86,16 +86,44 @@ function! vimspectorpy#rxvt_launcher(cmd)
 endfunction
 let g:vimspectorpy#imps["rxvt"] = function("vimspectorpy#rxvt_launcher")
 
+let s:shell_error = 0
+let s:system_running = 0
+function! s:SystemDone(msg, exitval)
+    let s:shell_error = a:exitval
+    let s:system_running = 0
+endfunction
+
+function! vimspectorpy#systemlist(cmd, close_on_error=0)
+    let s:shell_error = 0
+    echom a:cmd
+    let buf = term_start(a:cmd, {"exit_cb": funcref("s:SystemDone")})
+    let s:system_running = 1
+    while s:system_running == 1
+        call term_wait(buf)
+    endwhile
+    if s:shell_error
+        if a:close_on_error
+            exe "bdel " . buf
+        endif
+    else
+        exe "bdel " . buf
+    endif
+    let lines = getbufline(buf, 1, "$")
+    return lines
+endfunction
 
 function! vimspectorpy#update()
-    call mkdir(g:viminspectorpy_venv, "p")
-    let out=system("python -m venv " . g:viminspectorpy_venv)
-    if v:shell_error
-        throw "vimspectorpy#update failed to create a virtualenv for ipython and debugpy: " . out
+    if stridx(g:vimspectorpy_venv, g:vimspectorpy_home) != 0
+        throw "Please update your own directory manually (" . g:vimspectorpy_venv . ")"
     endif
-    let out=system("source " . g:viminspectorpy_venv . "/bin/activate && pip install -U ipython debugpy")
-    if v:shell_error
-        throw "vimspectorpy#update failed to install/update ipython and debugpy: " . out
+    call mkdir(g:vimspectorpy_venv, "p")
+    call vimspectorpy#systemlist(["python", "-m", "venv", "--clear", g:vimspectorpy_venv])
+    if s:shell_error
+        throw "vimspectorpy#update failed to create a virtualenv for ipython and debugpy"
+    endif
+    call vimspectorpy#systemlist(["sh", "-c", "source " . g:vimspectorpy_venv . "/bin/activate && pip install -U ipython debugpy"])
+    if s:shell_error
+        throw "vimspectorpy#update failed to install/update ipython and debugpy"
     endif
     for config_dir in glob(g:vimspector_home . "/configurations/*", 1, 1)
         if isdirectory(config_dir)
@@ -107,9 +135,9 @@ function! vimspectorpy#update()
     endif
     let config_dir = config_dir . "/python"
     call mkdir(config_dir, "p")
-    let out=system("/bin/cp " . g:vimspectorpy_home . "/vimspectorpy.json " . config_dir)
-    if v:shell_error
-        throw "vimspectorpy#update failed to copy vimspectorpy.json: " . out
+    call vimspectorpy#systemlist(["/bin/cp", g:vimspectorpy_home . "/vimspectorpy.json", config_dir])
+    if s:shell_error
+        throw "vimspectorpy#update failed to copy vimspectorpy.json"
     endif
 endfunction
 
