@@ -99,7 +99,7 @@ These commands are available to you:
 ### g:vimspectorpy#cmd_prefix
 
 This plugin will not override command names you defined yourself.  To avoid
-naming conflicts you could ass a prefix to its commands.
+naming conflicts you could add a prefix to its commands.
 
 This will make all the 'Py...' commands start with 'VS' (VSPyconsole,
 VSPyattach, ...):
