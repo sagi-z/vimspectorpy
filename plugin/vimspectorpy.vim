@@ -22,17 +22,41 @@ let s:debugpy_port = 6789
 let s:sessions = {}
 
 
+function! s:PythonPathStr()
+    return glob(g:vimspectorpy_venv . '/lib/python*/site-packages')
+endfunction
+
 function! s:AssertCanWork()
     if ! isdirectory(g:vimspectorpy_venv . '/lib')
         throw "Please execute VimspectorpyUpdate first"
     endif
-    if has_key(g:vimspectorpy#imps, g:vimspectorpy#launcher)
-        throw "No registered implementation for window launcher '" . g: vimspectorpy#launcher . "'"
+    if ! has_key(g:vimspectorpy#imps, g:vimspectorpy#launcher)
+        throw "No registered implementation for window launcher '" . g:vimspectorpy#launcher . "'"
     endif
 endfunction
 
 
-function! s:DebugpyLaunch(cmd, args, name, default_name=v:none, use_ext_venv=1, wait=1)
+function! s:DebugpyLaunchSuccess(name, port, attach)
+    let s:sessions[a:name] = a:port
+    if a:attach
+        call s:DebugpyAttach(a:name)
+    endif
+endfunction
+
+function! s:DebugpyLaunchFailure(name, port, cmd, imp, attach, errs)
+    if match(a:errs, "Address already in use") != -1
+        let cmd = substitute(a:cmd, 'localhost:' . a:port, 'localhost:' . s:debugpy_port, "")
+        let Imp = a:imp
+        let SuccessCB = funcref('s:DebugpyLaunchSuccess', [a:name, s:debugpy_port, a:attach])
+        let FailureCB = funcref('s:DebugpyLaunchFailure', [a:name, s:debugpy_port, cmd, Imp, a:attach])
+        call Imp(cmd, SuccessCB, FailureCB)
+        let s:debugpy_port += 1  " For next attempts
+    else
+        echoerr "debugpy failed to launch: " . a:errs
+    endif
+endfunction
+
+function! s:DebugpyLaunch(cmd, args, name, default_name, use_ext_venv, wait, attach)
     call s:AssertCanWork()
     if empty(a:name)
         let name = a:default_name
@@ -44,7 +68,7 @@ function! s:DebugpyLaunch(cmd, args, name, default_name=v:none, use_ext_venv=1, 
     endif
     let Imp = g:vimspectorpy#imps[g:vimspectorpy#launcher]
     if a:use_ext_venv
-        let use_ext_venv="export PYTHONPATH=" . g:vimspectorpy_venv . " && "
+        let use_ext_venv="export PYTHONPATH=" . s:PythonPathStr() . " && "
     else
         let use_ext_venv=""
     endif
@@ -53,21 +77,17 @@ function! s:DebugpyLaunch(cmd, args, name, default_name=v:none, use_ext_venv=1, 
     else
         let wait=""
     endif
-    while 1
-        let cmd = use_ext_venv . "python -m debugpy " . wait .  " --listen localhost:"
-                    \. s:debugpy_port .  " `which " . a:cmd . "` " . a:args
-        try
-            call Imp(cmd)
-            break
-            catch /Address already in use/
-                let s:debugpy_port += 1
-        endtry
-    endwhile
-    let s:sessions[name] = s:debugpy_port
+    let cmd = use_ext_venv . "python -m debugpy " . wait .  " --configure-subProcess False "
+                \. "--listen localhost:" . s:debugpy_port .  " `which " . a:cmd . "` "
+                \. a:args .  " && read -p PRESS\\ ENTER\\ TO\\ CLOSE REPLY"
+    let SuccessCB = funcref('s:DebugpyLaunchSuccess', [name, s:debugpy_port, a:attach])
+    let FailureCB = funcref('s:DebugpyLaunchFailure', [name, s:debugpy_port, cmd, Imp, a:attach])
+    call Imp(cmd, SuccessCB, FailureCB)
+    let s:debugpy_port += 1  " For next attempts
 endfunction
 
 
-function! s:DebugpyAttach(name, default_name)
+function! s:DebugpyAttach(name, default_name=v:none)
     if empty(a:name)
         let name = a:default_name
     else
@@ -83,20 +103,18 @@ function! s:DebugpyAttach(name, default_name)
 endfunction
 
 
-function! s:Pytest(name, args)
-    call s:DebugpyLaunch('pytest', a:args, 'Pytest', v:none, 0)
-    call s:DebugpyAttach('Pytest')
+function! s:Pytest(args)
+    call s:DebugpyLaunch('pytest', a:args, 'Pytest', v:none, 1, 1, 1)
 endfunction
 
 
-function! s:Nosetests(name, args)
-    call s:DebugpyLaunch('nosetests', a:args, 'Nosetests', v:none, 0)
-    call s:DebugpyAttach('Nosetests')
+function! s:Nosetests(args)
+    call s:DebugpyLaunch('nosetests', a:args, 'Nosetests', v:none, 1, 1, 1)
 endfunction
 
 
 if !exists(g:vimspectorpy#cmd_prefix . ":Pyconsole")
-    exe "command! -nargs=? " . g:vimspectorpy#cmd_prefix . "Pyconsole call s:DebugpyLaunch('ipython', '',  <q-args>, 'Pyconsole', 1, 0)"
+    exe "command! -nargs=? " . g:vimspectorpy#cmd_prefix . "Pyconsole call s:DebugpyLaunch('ipython', '',  <q-args>, 'Pyconsole', 1, 0, 0)"
 endif
 
 if !exists(g:vimspectorpy#cmd_prefix . ":Pyattach")
