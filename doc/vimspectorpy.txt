@@ -1,0 +1,211 @@
+*vimspectorpy.txt*- python default configurations for vimspector
+  
+Description~
+
+Being able to simply debug a piece of code with {ipython} or set a breakpoint
+in a {pytest}/{nose} is priceless. Also to use the correct python
+environment for debugging automatically should be transparent.
+
+This plugin adds some python customization to {vimspector}:
+
+* Choose the correct python executable if in a VIRTUAL_ENV.
+* Run pytest/nosetests for the project or test file, with breakpoints in
+  {vimspector}.
+* Debug the current file as a program.
+* Launch ipython and attach a debugger to it to debug your code with {vimspector}.
+
+
+References~
+
+{pytest}      https://docs.pytest.org/en/stable/
+{nose}        https://nose.readthedocs.io/en/latest/
+{vimspector}  https://github.com/puremourning/vimspector
+
+Contents~
+
+* INSTALL..........................(|vimspectorpy-install|)
+* DEBUG CONFIGURATIONS.............(|vimspectorpy-debug-configs|)
+* COMMANDS.........................(|vimspectorpy-commands|)
+* WINDOW BACKENDS (developers).....(|vimspectorpy-window-backends|)
+* SETTINGS.........................(|vimspectorpy-settings|)
+
+
+==============================================================================
+Install~
+                            *vimspectorpy-install*
+
+Either with plug.vim~
+
+Of course make sure {vimspector} is installed:
+
+`Plug 'puremourning/vimspector'`
+
+And also add this:
+
+`Plug 'sagi-z/vimspectorpy', { 'do': { -> vimspectorpy#update() } }`
+
+Or Manual~
+
+* Install {vimspector}.
+* Install {vimspectorpy}:
+`:!git clone https://github.com/sagi-z/vimspectorpy ~/.vim/plugin/vimspectorpy`
+`:VimspectorpyUpdate`
+
+
+==============================================================================
+Debug configurations~
+                         *vimspectorpy-debug-config*
+
+Next time you are on a python source and start a debug session (F5) you'll get
+these options:
+
+1. attach2port - attach to a port of a debugpy running on localhost (used
+   internally by this plugin). This is a simple "multi-session" adapter
+   configuration that attaches to localhost and needs a port to connect to.
+   See {vimspector} documentation if you want this.
+2. debug this file - launch a debug session for the current file, using the
+   python from your $VIRTUAL_ENV if there is one, or {python3}.
+
+==============================================================================
+Commands~
+                           *vimspectorpy-commands*
+
+These commands are available to you:
+
+                           *vimspectorpy-Pyconsole*
+{ipython} started with debugpy, ready to attach to, but not attached.
+The default name is 'Pyconsole' - it is mapped to a port number you
+can attach to with :Pyattach.
+>
+  :Pyconsole [name]
+<
+                           *vimspectorpy-Pyattach*
+Start a debug session with {vimspector} against the port mapped to by
+'name'. The default name is 'Pyconsole'.
+>
+  :Pyattach [name]
+<
+                            *vimspectorpy-Pytest*
+pytest started with debugpy, attached to immediately with {vimspector}.
+The default name is 'Pytest' - it is mapped to a port number you
+can attach to with :Pyattach, if you accidentally detach from it.
+'options' are passed on to pytest.
+>
+  :Pytest [name] [options]
+<
+                          *vimspectorpy-PytestThis*
+pytest started with debugpy for the current file, attached to immediately
+with {vimspector}. The default name is 'Pytest' - it is mapped to a port
+number you can attach to with :Pyattach, if you accidentally detach from it.
+'options' are passed on to pytest. The path to the current file is appended.
+>
+  :PytestThis [name] [options]
+<
+                           *vimspectorpy-Nosetests*
+nosetests started with debugpy, attached to immediately with {vimspector}.
+The default name is 'Nosetests' - it is mapped to a port number you
+can attach to with :Pyattach, if you accidentally detach from it.
+'options' are passed on to nosetests.
+>
+  :Nosetests [name] [options]
+<
+                         *vimspectorpy-NosetestsThis*
+nosetests started with debugpy for the current file, attached to immediately
+with {vimspector}. The default name is 'Nosetests' - it is mapped to a port
+number you can attach to with :Pyattach, if you accidentally detach from it.
+'options' are passed on to nosetests. The path to the current file is appended.
+>
+  :NosetestsThis [name] [options]
+<
+
+Other commands~
+                      *vimspectorpy-VimspectorpyUpdate*
+This installs/updates this plugin's external dependencies:
+* A virtualenv with ipython and debugpy.
+* Some default configurations for {vimspector} python filetype.
+>
+  :VimspectorpyUpdate
+<
+==============================================================================
+Window backends (developers)~
+                        *vimspectorpy-window-backends*
+
+To open a {debugpy} process in another window, this plugin tries to find a
+backend suitable for you automatically. These are supported : 'tmux', 'xterm',
+'rxvt'. The idea is to open a window external to {Vim} since there is not
+much room next to the {vimspector} debug session.
+
+Adding a backend is not too complicated - here is how the xterm backend was
+implemented:
+
+>
+  " This is the implementation for xterm window launcher.
+  " To add another launcher for 'a:cmd' in a window follow this simple guide:
+  " Make sure that 'a:cmd' is successful without blocking and invoke success_cb()
+  " or failure_cb(cmd_output). See below.
+
+  function! vimspectorpy#xterm_launcher(cmd, success_cb, failure_cb)
+      let err_file = "/tmp/vimspectorpy-xterm-err." . getpid()
+      if filereadable(err_file)
+          call delete(err_file)
+      endif
+      let out = system("xterm -l -lf " . err_file . " -e sh -c '" . a:cmd .  " || echo VIMSPECTORPY_FAIL' &")
+      if v:shell_error
+          return vimspectorpy#warn("xterm failed :" . out)
+      endif
+      " Check success/failure after 2 seconds and continue flow there
+      call timer_start(2000, funcref('s:XtermCmdChecker', [err_file, a:success_cb, a:failure_cb]))
+  endfunction
+
+
+  function s:XtermCmdChecker(err_file, success_cb, failure_cb, timer)
+      let errs=trim(system('cat ' . a:err_file))
+      call delete(a:err_file)
+      if match(errs, 'VIMSPECTORPY_FAIL') != -1
+          let CB = a:failure_cb
+          call CB(errs)
+      else
+          let CB = a:success_cb
+          call CB()
+      endif
+  endfunction
+
+
+If you add one a pull request will be most appreciated.
+
+==============================================================================
+Settings~
+                           *vimspectorpy-settings*
+
+                          *g:vimspectorpy#cmd_prefix*
+
+This plugin will not override command names you defined yourself.
+To avoid naming conflicts you could ass a prefix to its commands.
+
+This will make all the 'Py...' commands start with 'VS' (VSPyconsole,
+VSPyattach, ...):
+
+>
+  let g:vimspectorpy#cmd_prefix = "VS"
+<
+
+                          *g:vimspectorpy#launcher*
+
+For starting another window the plugin will use 'tmux' automatically in a
+console and 'xterm' in GUI.
+
+You could choose 'rxvt' or force 'xterm' using:
+
+>
+  let g:vimspectorpy#launcher = "rxvt"
+<
+
+==============================================================================
+License~
+                            *vimspectorpy-license*
+
+MIT
+
+
+==============================================================================
+vim:tw=78:sw=2:ts=2:ft=help:norl:nowrap:expandtab

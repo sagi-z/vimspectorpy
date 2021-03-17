@@ -5,12 +5,11 @@
 Add some python customization to [vimspector]:
 
 * Choose the correct python executable if in a VIRTUAL_ENV.
-* Run pytest/nodetests for the project or test file.
+* Run pytest/nosetests for the project or test file.
 * Debug the current file as a program.
-* Launch ipython and attach a debugger to it to debug your code with vimspector
-  (currently needs [tmux]).
+* Launch ipython and attach a debugger to it to debug your code with vimspector.
 
-![ipython example](ipython.gif "ipython console debug code")
+![Pyconsole example](Pyconsole.gif "ipython console debug your code with vimspector")
 
 ## Install
 
@@ -36,86 +35,93 @@ Of course make sure [vimspector] is installed:
 
 ### Vimspector new configurations
 
-Next time you are on a python source and start a debug sesion (F5) you'll get
+Next time you are on a python source and start a debug session (F5) you'll get
 these options:
 
 1. attach2port - attach to a port of a debugpy running on localhost (used
-   internally by IpythonAttach).
-2. debug this file - launch a debug session for the current file.
-3. pytest - launch a debug session running pytest, breaking on your breakpoints.
-4. pytest this test file - launch a debug session running pytest, breaking on
-   your breakpoints, using the current file as  a test file.
-5. nosetests - launch a debug session running nosetests, breaking on your breakpoints.
-6. nosetests this test file - launch a debug session running nosetests,
-   breaking on your breakpoints, using the current file as  a test file.
+   internally by this plugin). This is a simple "multi-session" adapter
+   configuration that attaches to localhost and needs a port to connect to.
+   See [vimspector] documentation if you want this.
+
+2. debug this file - launch a debug session for the current file, using the
+   python from your $VIRTUAL_ENV if there is one, or *python3*.
 
 ### ipython with vim breakpoints
 
-These commands are availbale to you:
+These commands are available to you:
 
 ```vim
-" ipython debug attach - start ipython in another window and start a debug
-" session inside vim, breaking on breakpoints
-:IpythonDA
+" ipython started with debugpy, ready to attach to, but not attached.
+" The default name is 'Pyconsole' - it is mapped to a port number you
+" can attach to with :Pyattach.
+:Pyconsole [name]
 
-" ipython debug - start ipython in another window with debugpy, but don't
-" attach to it for now
-:IpythonDebug
+" start a debug session with vimspector against the port mapped to by
+" 'name'. The default name is 'Pyconsole'.
+:Pyattach [name]
 
-" ipython attach - start a debug session to the latest 'IpythonDebug'  window
-" attaching to it now
-:IpythonAttach
+" pytest started with debugpy, attached to immediately with vimspector.
+" The default name is 'Pytest' - it is mapped to a port number you
+" can attach to with :Pyattach, if you accidentally detach from it.
+" 'options' are passed on to pytest.
+:Pytest [name] [options]
+
+" pytest started with debugpy for the current file, attached to immediately
+" with vimspector. The default name is 'Pytest' - it is mapped to a port
+" number you can attach to with :Pyattach, if you accidentally detach from it.
+" 'options' are passed on to pytest. The path to the current file is appended.
+:PytestThis [name] [options]
+
+" nosetests started with debugpy, attached to immediately with vimspector.
+" The default name is 'Nosetests' - it is mapped to a port number you
+" can attach to with :Pyattach, if you accidentally detach from it.
+" 'options' are passed on to nosetests.
+:Nosetests [name] [options]
+
+" nosetests started with debugpy for the current file, attached to immediately
+" with vimspector. The default name is 'Nosetests' - it is mapped to a port
+" number you can attach to with :Pyattach, if you accidentally detach from it.
+" 'options' are passed on to nosetests. The path to the current file is appended.
+:NosetestsThis [name] [options]
 ```
 
 ### other commands
 
 ```vim
-" ipython - start ipython in another window without any debugger nor any plans
-" to attach to it later.
-:IpythonAttach
-
-" update ipython and debugpy - upgrade them to latest versions
+" This installs/updates this plugin's external dependencies:
+" * A virtualenv with ipython and debugpy.
+" * Some default configurations for {vimspector} python filetype.
 :VimspectorpyUpdate
 ```
 
-## Configuration
+## Settings
 
-For starting another window, Currently the 'ipython' will use [tmux]
-automatically in a console and *xterm* in GUI.
+### g:vimspectorpy#cmd_prefix
 
-You could choose *rxvt* or force *xterm* using:
+This plugin will not override command names you defined yourself.  To avoid
+naming conflicts you could ass a prefix to its commands.
+
+This will make all the 'Py...' commands start with 'VS' (VSPyconsole,
+VSPyattach, ...):
+
+```vim
+let g:vimspectorpy#cmd_prefix = "VS"
+```
+
+### g:vimspectorpy#launcher
+
+For starting another window the plugin will use [tmux] automatically in a
+console and 'xterm' in GUI.
+
+You could choose 'rxvt' or force 'xterm' using:
 
 ```vim
 let g:vimspectorpy#launcher = "rxvt"
 ```
 
-### Advanced: Add a window launcher for *ipython*
+## More help
 
-It is simple enough to add support for other launchers - here is an 'rxvt' example:
-
-```vim
-
-" This is a sample implementation for 'rxvt' as a launcher in window.
-" To add another launcher for 'a:cmd' in a window follow this simple guide:
-" Make sure that 'cmd' is successful or throw the error messages it generated
-" as a string.
-function! Rxvt_launcher(cmd)
-endfunction
-let g:vimspectorpy#imps["rxvt"] = function("Rxvt_launcher")
-```
-
-### Advanced: Virtual env for *ipython* and *debugpy*
-
-This plugin needs a place to take from *ipython* and *debugpy*. It handles this
-AUTOMATICALLY in another directory where the plugin is instaleld. However if
-you want to change this to your own VIRTUAL_ENV, do this:
-
-```vim
-" Do this only to use ipython and debugpy from your own VIRTUAL_ENV
-if exists('$VIRTUAL_ENV')
-    let g:viminspectorpy_venv=$VIRTUAL_ENV
-endif
-```
+For the most up to date docs use [:help vimspectorpy](doc/vimspectorpy.txt)
 
 ## License
 

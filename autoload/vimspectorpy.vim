@@ -7,7 +7,14 @@ set cpo&vim
 let g:vimspectorpy#imps = {}
 
 " Allow a user prefix for commands
-let g:vimspectorpy#cmd_prefix = ""
+if ! exists("g:vimspectorpy#cmd_prefix")
+    let g:vimspectorpy#cmd_prefix = ""
+endif
+
+function! vimspectorpy#warn(msg)
+    echohl WarningMsg | echo a:msg | echohl None
+endfunction
+
 
 " The chosen launcher of windows (tmux is selected automatically if under $TMUX)
 if !exists("g:vimspectorpy#launcher") || empty(g:vimspectorpy#launcher)
@@ -27,7 +34,7 @@ endif
 
 " Below are the implementation for some window launchers.
 " To add another launcher for 'a:cmd' in a window follow this simple guide:
-" Make sure that ':cmd' is successful without blocking and invoke success_cb()
+" Make sure that 'a:cmd' is successful without blocking and invoke success_cb()
 " or failure_cb(cmd_output). See examples below.
 let g:vimspectorpy#imps["tmux"] = function("vimspectorpy#tmux_launcher")
 let g:vimspectorpy#imps["xterm"] = function("vimspectorpy#xterm_launcher")
@@ -43,7 +50,7 @@ function! vimspectorpy#tmux_launcher(cmd, success_cb, failure_cb)
                 \" || tmux capture-pane -S - -E - -p -t $TMUX_PANE > " . base_err_file . ".${TMUX_PANE}'"
     let pane = trim(system(cmd))
     if v:shell_error
-        throw "tmux failed :" . pane
+        return vimspectorpy#warn("tmux failed :" . pane)
     endif
     let err_file = base_err_file . "." . pane
     " Check success/failure after 2 seconds and continue flow there
@@ -71,7 +78,7 @@ function! vimspectorpy#xterm_launcher(cmd, success_cb, failure_cb)
     endif
     let out = system("xterm -l -lf " . err_file . " -e sh -c '" . a:cmd .  " || echo VIMSPECTORPY_FAIL' &")
     if v:shell_error
-        throw "xterm failed :" . out
+        return vimspectorpy#warn("xterm failed :" . out)
     endif
     " Check success/failure after 2 seconds and continue flow there
     call timer_start(2000, funcref('s:XtermCmdChecker', [err_file, a:success_cb, a:failure_cb]))
@@ -99,7 +106,7 @@ function! vimspectorpy#rxvt_launcher(cmd, success_cb, failure_cb)
     let out = system("rxvt -xrm 'URxvt.print-pipe: cat > " . err_file . "' -e sh -c '". a:cmd .
                 \' || (iPrtSc="$(echo -ne "\033[i")" && echo -n "$PrtSc")' . "' &")
     if v:shell_error
-        throw "rxvt failed :" . out
+        return vimspectorpy#warn("rxvt failed :" . out)
     endif
     " Check success/failure after 2 seconds and continue flow there
     call timer_start(2000, funcref('s:RxvtCmdChecker', [err_file, a:success_cb, a:failure_cb]))
@@ -120,15 +127,20 @@ endfunction
 
 
 
-" This installs/updates this plugin with external dependencies:
+" This installs/updates this plugin's external dependencies:
 " * A virtualenv with ipython and debugpy.
 " * Some default configurations for vimspector python filetype.
 function! vimspectorpy#update()
     if stridx(g:vimspectorpy_venv, g:vimspectorpy_home) != 0
-        throw "Please update your own directory manually (" . g:vimspectorpy_venv . ")"
+        return vimspectorpy#warn("Please update your own VIRTUAL_ENV manually (pip install -U ipython debugpy)")
+    endif
+    if executable('virtualenv')
+        let virtualenv = "virtualenv"
+    else
+        let virtualenv = "python3 -m venv"
     endif
     call mkdir(g:vimspectorpy_venv, "p")
-    let out = system("python3 -m venv  --clear " . g:vimspectorpy_venv)
+    let out = system(virtualenv . " --clear " . g:vimspectorpy_venv)
     if v:shell_error
         throw "vimspectorpy#update failed to create a virtualenv for ipython and debugpy: " . out
     endif

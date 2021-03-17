@@ -28,11 +28,14 @@ endfunction
 
 function! s:AssertCanWork()
     if ! isdirectory(g:vimspectorpy_venv . '/lib')
-        throw "Please execute VimspectorpyUpdate first"
+        call vimspectorpy#warn("Please execute VimspectorpyUpdate first")
+        return 0
     endif
     if ! has_key(g:vimspectorpy#imps, g:vimspectorpy#launcher)
-        throw "No registered implementation for window launcher '" . g:vimspectorpy#launcher . "'"
+        call vimspectorpy#warn("No registered implementation for window launcher '" . g:vimspectorpy#launcher . "'")
+        return 0
     endif
+    return 1
 endfunction
 
 
@@ -52,25 +55,32 @@ function! s:DebugpyLaunchFailure(name, port, cmd, imp, attach, errs)
         call Imp(cmd, SuccessCB, FailureCB)
         let s:debugpy_port += 1  " For next attempts
     else
-        echoerr "debugpy failed to launch: " . a:errs
+        call vimspectorpy#warn("debugpy failed to launch: " . trim(a:errs))
     endif
 endfunction
 
 function! s:DebugpyLaunch(cmd, args, name, default_name, use_ext_venv, wait, attach)
-    call s:AssertCanWork()
+    if ! s:AssertCanWork()
+        return
+    endif
     if empty(a:name)
         let name = a:default_name
     else
         let name = a:name
     endif
     if empty(name)
-        throw "Must get a name to assign to this session"
+        return vimspectorpy#warn("Must get a name to assign to this session")
     endif
     let Imp = g:vimspectorpy#imps[g:vimspectorpy#launcher]
     if a:use_ext_venv
         let use_ext_venv="export PYTHONPATH=" . s:PythonPathStr() . " && "
+        let bin = g:vimspectorpy_venv . '/bin/' . a:cmd
     else
         let use_ext_venv=""
+        let bin = exepath(a:cmd)
+    endif
+    if ! executable(bin)
+        return vimspectorpy#warn("'" . a:cmd . "' was not found")
     endif
     if a:wait
         let wait="--wait-for-client"
@@ -78,7 +88,7 @@ function! s:DebugpyLaunch(cmd, args, name, default_name, use_ext_venv, wait, att
         let wait=""
     endif
     let cmd = use_ext_venv . "python -m debugpy " . wait .  " --configure-subProcess False "
-                \. "--listen localhost:" . s:debugpy_port .  " `which " . a:cmd . "` "
+                \. "--listen localhost:" . s:debugpy_port .  " " . bin
                 \. a:args .  " && read -p PRESS\\ ENTER\\ TO\\ CLOSE REPLY"
     let SuccessCB = funcref('s:DebugpyLaunchSuccess', [name, s:debugpy_port, a:attach])
     let FailureCB = funcref('s:DebugpyLaunchFailure', [name, s:debugpy_port, cmd, Imp, a:attach])
@@ -94,10 +104,10 @@ function! s:DebugpyAttach(name, default_name=v:none)
         let name = a:name
     endif
     if empty(name)
-        throw "Must get a session name to connect to"
+        return vimspectorpy#warn("Must get a session name to connect to")
     endif
     if ! has_key(s:sessions, name)
-        throw "There is no session with name " . name
+        return vimspectorpy#warn("There is no session with name " . name)
     endif
     call vimspector#LaunchWithSettings( #{ configuration: 'attach2port', port: s:sessions[name]})
 endfunction
