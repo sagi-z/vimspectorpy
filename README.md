@@ -2,12 +2,17 @@
 
 ## Description
 
-Add some python customization to [vimspector]:
+Being able to simply debug a piece of code with 'ipython' or set a breakpoint
+in a *pytest/nose* is priceless. Also to use the correct python
+environment for debugging automatically should be transparent.
+
+This plugin adds some python customization to [vimspector]:
 
 * Choose the correct python executable if in a VIRTUAL_ENV.
-* Run pytest/nosetests for the project or test file.
+* Run pytest/nosetests for the project or test file, with breakpoints in
+  {vimspector}.
 * Debug the current file as a program.
-* Launch ipython and attach a debugger to it to debug your code with vimspector.
+* Launch ipython and attach a debugger to it to debug your code with [vimspector].
 
 ![Pyconsole example](Pyconsole.gif "ipython console debug your code with vimspector")
 
@@ -15,11 +20,13 @@ Add some python customization to [vimspector]:
 
 ### with plug.vim
 
-`Plug 'sagi-z/vimspectorpy' {}`
-
 Of course make sure [vimspector] is installed:
 
 `Plug 'puremourning/vimspector'`
+
+And also add this:
+
+`Plug 'sagi-z/vimspectorpy', { 'do': { -> vimspectorpy#update() } }`
 
 ### Manual
 
