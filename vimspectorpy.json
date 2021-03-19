@@ -1,31 +1,16 @@
 { // This file was added by vimspector-py
   "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json",
   "configurations": {
-    "attach2port": {
-      "adapter": "multi-session",
-      "variables": {
-        "host": "localhost"
-      },
-      "configuration": {
-        "request": "attach"
-      },
-      "breakpoints": {
-        "exception": {
-          "raised": "N",
-          "uncaught": "",
-          "userUnhandled": ""
-        }
-      }
-    },
     "debug this file": {
       "adapter": "debugpy",
       "variables": {
         "Python": {
-          "shell": "/bin/sh -c 'if [ -z \"$$VIRTUAL_ENV\" ]; then echo $$(which python3); else echo \"$$VIRTUAL_ENV/bin/python\"; fi'"
+          "shell": "/bin/sh -c 'if [ -z \"${dollar}VIRTUAL_ENV\" ]; then echo $$(which python3); else echo \"${dollar}VIRTUAL_ENV/bin/python\"; fi'"
         }
       },
       "configuration": {
         "type": "python",
+        "autoselect": false,
         "request": "launch",
         "cwd": "${workspaceRoot}",
         "stopOnEntry": false,

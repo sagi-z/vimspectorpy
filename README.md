@@ -43,14 +43,9 @@ And also add this:
 ### Vimspector new configurations
 
 Next time you are on a python source and start a debug session (F5) you'll get
-these options:
+these option:
 
-1. attach2port - attach to a port of a debugpy running on localhost (used
-   internally by this plugin). This is a simple "multi-session" adapter
-   configuration that attaches to localhost and needs a port to connect to.
-   See [vimspector] documentation if you want this.
-
-2. debug this file - launch a debug session for the current file, using the
+1. debug this file - launch a debug session for the current file, using the
    python from your $VIRTUAL_ENV if there is one, or *python3*.
 
 ### ipython with vim breakpoints
