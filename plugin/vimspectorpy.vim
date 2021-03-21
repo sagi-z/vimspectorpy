@@ -1,5 +1,5 @@
 " Vimspector add ons for python
-" Last Change:	2021 March 15
+" Last Change:	2021 March 21
 " Maintainer:	Sagi Zeevi <sagi.zeevi@gmail.com>
 " License:      MIT
 
@@ -75,6 +75,9 @@ function! s:DebugpyLaunch(cmd, args, name, default_name, use_ext_venv, wait, att
     if a:use_ext_venv
         let use_ext_venv="export PYTHONPATH=" . s:PythonPathStr() . " && "
         let bin = g:vimspectorpy_venv . '/bin/' . a:cmd
+        if ! executable(bin)
+            let bin = exepath(a:cmd)
+        endif
     else
         let use_ext_venv=""
         let bin = exepath(a:cmd)
@@ -88,7 +91,7 @@ function! s:DebugpyLaunch(cmd, args, name, default_name, use_ext_venv, wait, att
         let wait=""
     endif
     let cmd = use_ext_venv . "python -m debugpy " . wait .  " --configure-subProcess False "
-                \. "--listen localhost:" . s:debugpy_port .  " " . bin
+                \. "--listen localhost:" . s:debugpy_port .  " " . bin . " " .
                 \. a:args .  " && read -p PRESS\\ ENTER\\ TO\\ CLOSE REPLY"
     let SuccessCB = funcref('s:DebugpyLaunchSuccess', [name, s:debugpy_port, a:attach])
     let FailureCB = funcref('s:DebugpyLaunchFailure', [name, s:debugpy_port, cmd, Imp, a:attach])
@@ -123,6 +126,26 @@ function! s:Nosetests(args)
 endfunction
 
 
+" vim-test strategy
+function! s:VimspectorpyStrategy(cmd)
+    let i = match(a:cmd, ' ')
+    if i == -1
+        let cmd = a:cmd
+        let args = ''
+    else
+        let cmd = trim(a:cmd[:i])
+        let args = trim(a:cmd[i:])
+    endif
+    call s:DebugpyLaunch(cmd, args, 'vim-test', v:none, 1, 1, 1)
+endfunction
+
+if ! exists("g:test#custom_strategies")
+    let g:test#custom_strategies = {'vimspectorpy': function('s:VimspectorpyStrategy')}
+else
+    let g:test#custom_strategies['vimspectorpy'] = function('s:VimspectorpyStrategy')
+endif
+
+
 if !exists(g:vimspectorpy#cmd_prefix . ":Pyconsole")
     exe "command! -nargs=? " . g:vimspectorpy#cmd_prefix . "Pyconsole call s:DebugpyLaunch('ipython', '',  <q-args>, 'Pyconsole', 1, 0, 0)"
 endif
@@ -131,20 +154,20 @@ if !exists(g:vimspectorpy#cmd_prefix . ":Pyattach")
     exe "command! -nargs=? " . g:vimspectorpy#cmd_prefix . "Pyattach call s:DebugpyAttach(<q-args>, 'Pyconsole')" 
 endif
 
-if !exists(g:vimspectorpy#cmd_prefix . ":Pytest")
-    exe "command! -nargs=* " . g:vimspectorpy#cmd_prefix . "Pytest call s:Pytest(<q-args>)"
+if !exists(g:vimspectorpy#cmd_prefix . ":PytestD")
+    exe "command! -nargs=* " . g:vimspectorpy#cmd_prefix . "PytestD call s:Pytest(<q-args>)"
 endif
 
-if !exists(g:vimspectorpy#cmd_prefix . ":PytestThis")
-    exe "command! -nargs=* " . g:vimspectorpy#cmd_prefix . "PytestThis call s:Pytest(<q-args> . ' ' . expand('%'))"
+if !exists(g:vimspectorpy#cmd_prefix . ":PytestDThis")
+    exe "command! -nargs=* " . g:vimspectorpy#cmd_prefix . "PytestDThis call s:Pytest(<q-args> . ' ' . expand('%'))"
 endif
 
-if !exists(g:vimspectorpy#cmd_prefix . ":Nosetests")
+if !exists(g:vimspectorpy#cmd_prefix . ":NosetestsD")
     exe "command! -nargs=* " . g:vimspectorpy#cmd_prefix . "Nosetests call s:Nosetests(<q-args>)"
 endif
 
-if !exists(g:vimspectorpy#cmd_prefix . ":NosetestsThis")
-    exe "command! -nargs=* " . g:vimspectorpy#cmd_prefix . "NosetestsThis call s:Nosetests(<q-args> . ' ' . expand('%'))"
+if !exists(g:vimspectorpy#cmd_prefix . ":NosetestsDThis")
+    exe "command! -nargs=* " . g:vimspectorpy#cmd_prefix . "NosetestsDThis call s:Nosetests(<q-args> . ' ' . expand('%'))"
 endif
 
 if !exists(":VimspectorpyUpdate")

@@ -13,6 +13,7 @@ This plugin adds some python customization to {vimspector}:
   {vimspector}.
 * Debug the current file as a program.
 * Launch ipython and attach a debugger to it to debug your code with {vimspector}.
+* Add a strategy to {vim-test} to allow running a test case in a debugger.
 
 
 References~
@@ -20,6 +21,7 @@ References~
 {pytest}      https://docs.pytest.org/en/stable/
 {nose}        https://nose.readthedocs.io/en/latest/
 {vimspector}  https://github.com/puremourning/vimspector
+{vim-test}    https://github.com/vim-test/vim-test
 
 Contents~
 
@@ -28,6 +30,7 @@ Contents~
 * COMMANDS.........................(|vimspectorpy-commands|)
 * WINDOW BACKENDS (developers).....(|vimspectorpy-window-backends|)
 * SETTINGS.........................(|vimspectorpy-settings|)
+* VIM-TEST.........................(|vimspectorpy-vim-test|)
 
 
 ==============================================================================
@@ -85,37 +88,37 @@ Start a debug session with {vimspector} against the port mapped to by
 >
   :Pyattach [name]
 <
-                            *vimspectorpy-Pytest*
+                            *vimspectorpy-PytestD*
 pytest started with debugpy, attached to immediately with {vimspector}.
-The default name is 'Pytest' - it is mapped to a port number you
+The default name is 'PytestD' - it is mapped to a port number you
 can attach to with :Pyattach, if you accidentally detach from it.
 'options' are passed on to pytest.
 >
-  :Pytest [name] [options]
+  :PytestD [name] [options]
 <
-                          *vimspectorpy-PytestThis*
+                          *vimspectorpy-PytestDThis*
 pytest started with debugpy for the current file, attached to immediately
-with {vimspector}. The default name is 'Pytest' - it is mapped to a port
+with {vimspector}. The default name is 'PytestD' - it is mapped to a port
 number you can attach to with :Pyattach, if you accidentally detach from it.
 'options' are passed on to pytest. The path to the current file is appended.
 >
-  :PytestThis [name] [options]
+  :PytestDThis [name] [options]
 <
-                           *vimspectorpy-Nosetests*
+                           *vimspectorpy-NosetestsD*
 nosetests started with debugpy, attached to immediately with {vimspector}.
-The default name is 'Nosetests' - it is mapped to a port number you
+The default name is 'NosetestsD' - it is mapped to a port number you
 can attach to with :Pyattach, if you accidentally detach from it.
 'options' are passed on to nosetests.
 >
-  :Nosetests [name] [options]
+  :NosetestsD [name] [options]
 <
-                         *vimspectorpy-NosetestsThis*
+                         *vimspectorpy-NosetestsDThis*
 nosetests started with debugpy for the current file, attached to immediately
-with {vimspector}. The default name is 'Nosetests' - it is mapped to a port
+with {vimspector}. The default name is 'NosetestsD' - it is mapped to a port
 number you can attach to with :Pyattach, if you accidentally detach from it.
 'options' are passed on to nosetests. The path to the current file is appended.
 >
-  :NosetestsThis [name] [options]
+  :NosetestsDThis [name] [options]
 <
 
 Other commands~
@@ -200,6 +203,15 @@ You could choose 'rxvt' or force 'xterm' using:
   let g:vimspectorpy#launcher = "rxvt"
 <
 
+==============================================================================
+Vim-test~
+                           *vimspectorpy-vim-test*
+
+If you are using the excellent {vim-test} plugin, then now you can choose a
+strategy to open the test in a {vimspector} debugger:
+>
+  let test#strategy = "vimspectorpy"
+<
 ==============================================================================
 License~
                             *vimspectorpy-license*
