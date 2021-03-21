@@ -1,0 +1,21 @@
+{ // This file was added by vimspector-py
+  "$schema": "https://puremourning.github.io/vimspector/schema/vimspector.schema.json",
+  "configurations": {
+    "attach2port": {
+      "adapter": "multi-session",
+      "variables": {
+        "host": "localhost"
+      },
+      "configuration": {
+        "request": "attach"
+      },
+      "breakpoints": {
+        "exception": {
+          "raised": "N",
+          "uncaught": "",
+          "userUnhandled": ""
+        }
+      }
+    }
+  }
+}

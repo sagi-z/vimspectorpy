@@ -2,10 +2,15 @@
 
 ## Description
 
-Add some python customization to [vimspector]:
+Being able to simply debug a piece of code with 'ipython' or set a breakpoint
+in a *pytest/nose* is priceless. Also to use the correct python
+environment for debugging automatically should be transparent.
+
+This plugin adds some python customization to [vimspector]:
 
 * Choose the correct python executable if in a VIRTUAL_ENV.
-* Run pytest/nosetests for the project or test file.
+* Run pytest/nosetests for the project or test file, with breakpoints in
+  [vimspector].
 * Debug the current file as a program.
 * Launch ipython and attach a debugger to it to debug your code with vimspector.
 * Add a strategy to [vim-test] to allow running a test case in a debugger.
@@ -22,6 +27,10 @@ Of course make sure [vimspector] is installed:
 
 `Plug 'puremourning/vimspector'`
 
+And also add this:
+
+`Plug 'sagi-z/vimspectorpy', { 'do': { -> vimspectorpy#update() } }`
+
 ### Manual
 
 * Install [vimspector].
@@ -37,14 +46,9 @@ Of course make sure [vimspector] is installed:
 ### Vimspector new configurations
 
 Next time you are on a python source and start a debug session (F5) you'll get
-these options:
+this option:
 
-1. attach2port - attach to a port of a debugpy running on localhost (used
-   internally by this plugin). This is a simple "multi-session" adapter
-   configuration that attaches to localhost and needs a port to connect to.
-   See [vimspector] documentation if you want this.
-
-2. debug this file - launch a debug session for the current file, using the
+1. debug this file - launch a debug session for the current file, using the
    python from your $VIRTUAL_ENV if there is one, or *python3*.
 
 ### ipython with vim breakpoints
@@ -62,28 +66,28 @@ These commands are available to you:
 :Pyattach [name]
 
 " pytest started with debugpy, attached to immediately with vimspector.
-" The default name is 'PytestD' - it is mapped to a port number you
+" The default name is 'Pytest' - it is mapped to a port number you
 " can attach to with :Pyattach, if you accidentally detach from it.
 " 'options' are passed on to pytest.
-:PytestD [name] [options]
+:Pytest [name] [options]
 
 " pytest started with debugpy for the current file, attached to immediately
-" with vimspector. The default name is 'PytestD' - it is mapped to a port
+" with vimspector. The default name is 'Pytest' - it is mapped to a port
 " number you can attach to with :Pyattach, if you accidentally detach from it.
 " 'options' are passed on to pytest. The path to the current file is appended.
-:PytestDThis [name] [options]
+:PytestThis [name] [options]
 
 " nosetests started with debugpy, attached to immediately with vimspector.
-" The default name is 'NosetestsD' - it is mapped to a port number you
+" The default name is 'Nosetests' - it is mapped to a port number you
 " can attach to with :Pyattach, if you accidentally detach from it.
 " 'options' are passed on to nosetests.
-:NosetestsD [name] [options]
+:Nosetests [name] [options]
 
 " nosetests started with debugpy for the current file, attached to immediately
-" with vimspector. The default name is 'NosetestsD' - it is mapped to a port
+" with vimspector. The default name is 'Nosetests' - it is mapped to a port
 " number you can attach to with :Pyattach, if you accidentally detach from it.
 " 'options' are passed on to nosetests. The path to the current file is appended.
-:NosetestsDThis [name] [options]
+:NosetestsThis [name] [options]
 ```
 
 ### other commands
@@ -100,7 +104,7 @@ These commands are available to you:
 ### g:vimspectorpy#cmd_prefix
 
 This plugin will not override command names you defined yourself.  To avoid
-naming conflicts you could ass a prefix to its commands.
+naming conflicts you could add a prefix to its commands.
 
 This will make all the 'Py...' commands start with 'VS' (VSPyconsole,
 VSPyattach, ...):

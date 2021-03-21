@@ -112,7 +112,13 @@ function! s:DebugpyAttach(name, default_name=v:none)
     if ! has_key(s:sessions, name)
         return vimspectorpy#warn("There is no session with name " . name)
     endif
-    call vimspector#LaunchWithSettings( #{ configuration: 'attach2port', port: s:sessions[name]})
+    try
+        let ft = &l:ft
+        let &l:ft = 'vimspectorpy'
+        call vimspector#LaunchWithSettings( #{ configuration: 'attach2port', port: s:sessions[name]})
+    finally
+        let &l:ft = ft
+    endtry
 endfunction
 
 

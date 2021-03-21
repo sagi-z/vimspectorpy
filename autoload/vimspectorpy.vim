@@ -132,10 +132,10 @@ endfunction
 " * Some default configurations for vimspector python filetype.
 function! vimspectorpy#update()
     if stridx(g:vimspectorpy_venv, g:vimspectorpy_home) != 0
-        return vimspectorpy#warn("Please update your own VIRTUAL_ENV manually (pip install -U ipython debugpy)")
+        return vimspectorpy#warn("Please update your own VIRTUAL_ENV manually (pip3 install -U ipython debugpy)")
     endif
     if executable('virtualenv')
-        let virtualenv = "virtualenv"
+        let virtualenv = "virtualenv -p $(which python3)"
     else
         let virtualenv = "python3 -m venv"
     endif
@@ -144,23 +144,29 @@ function! vimspectorpy#update()
     if v:shell_error
         throw "vimspectorpy#update failed to create a virtualenv for ipython and debugpy: " . out
     endif
-    let out = system(". " . g:vimspectorpy_venv . "/bin/activate && pip install -U ipython debugpy")
+    let out = system("source " . g:vimspectorpy_venv . "/bin/activate && pip3 install -U ipython debugpy")
     if v:shell_error
         throw "vimspectorpy#update failed to install/update ipython and debugpy: " . out
     endif
-    for config_dir in glob(g:vimspector_home . "/configurations/*", 1, 1)
-        if isdirectory(config_dir)
+    for base_config_dir in glob(g:vimspector_home . "/configurations/*", 1, 1)
+        if isdirectory(base_config_dir)
             break
         endif
     endfor
-    if ! isdirectory(config_dir)
+    if ! isdirectory(base_config_dir)
         throw "vimspectorpy#update failed to find vimspector configurations directory"
     endif
-    let config_dir = config_dir . "/python"
+    let config_dir = base_config_dir . "/python"
     call mkdir(config_dir, "p")
     let out = system("/bin/cp " . g:vimspectorpy_home . "/vimspectorpy.json " . config_dir)
     if v:shell_error
         throw "vimspectorpy#update failed to copy vimspectorpy.json: " . out
+    endif
+    let config_dir = base_config_dir . "/vimspectorpy"
+    call mkdir(config_dir, "p")
+    let out = system("/bin/cp " . g:vimspectorpy_home . "/__vimspectorpy.json " . config_dir)
+    if v:shell_error
+        throw "vimspectorpy#update failed to copy __vimspectorpy.json: " . out
     endif
 endfunction
 
