@@ -49,7 +49,7 @@ this option:
 1. debug this file - launch a debug session for the current file, using the
    python from your $VIRTUAL_ENV if there is one, or *python3*.
 
-### ipython with vim breakpoints
+### ipython/pytest/nosetests with vim breakpoints
 
 These commands are available to you:
 
