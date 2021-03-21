@@ -21,8 +21,6 @@ This plugin adds some python customization to [vimspector]:
 
 ### with plug.vim
 
-`Plug 'sagi-z/vimspectorpy' {}`
-
 Of course make sure [vimspector] is installed:
 
 `Plug 'puremourning/vimspector'`
@@ -66,28 +64,28 @@ These commands are available to you:
 :Pyattach [name]
 
 " pytest started with debugpy, attached to immediately with vimspector.
-" The default name is 'Pytest' - it is mapped to a port number you
+" The default name is 'PytestD' - it is mapped to a port number you
 " can attach to with :Pyattach, if you accidentally detach from it.
 " 'options' are passed on to pytest.
-:Pytest [name] [options]
+:PytestD [name] [options]
 
 " pytest started with debugpy for the current file, attached to immediately
-" with vimspector. The default name is 'Pytest' - it is mapped to a port
+" with vimspector. The default name is 'PytestD' - it is mapped to a port
 " number you can attach to with :Pyattach, if you accidentally detach from it.
 " 'options' are passed on to pytest. The path to the current file is appended.
-:PytestThis [name] [options]
+:PytestDThis [name] [options]
 
 " nosetests started with debugpy, attached to immediately with vimspector.
-" The default name is 'Nosetests' - it is mapped to a port number you
+" The default name is 'NosetestsD' - it is mapped to a port number you
 " can attach to with :Pyattach, if you accidentally detach from it.
 " 'options' are passed on to nosetests.
-:Nosetests [name] [options]
+:NosetestsD [name] [options]
 
 " nosetests started with debugpy for the current file, attached to immediately
-" with vimspector. The default name is 'Nosetests' - it is mapped to a port
+" with vimspector. The default name is 'NosetestsD' - it is mapped to a port
 " number you can attach to with :Pyattach, if you accidentally detach from it.
 " 'options' are passed on to nosetests. The path to the current file is appended.
-:NosetestsThis [name] [options]
+:NosetestsDThis [name] [options]
 ```
 
 ### other commands
@@ -132,12 +130,6 @@ strategy to open the test in a [vimspector] debugger:
 ```vim
 let test#strategy = "vimspectorpy"
 ```
-
-==============================================================================
-License~
-                            *vimspectorpy-license*
-
-MIT
 
 ## More help
 
