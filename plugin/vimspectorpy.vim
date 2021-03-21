@@ -20,6 +20,7 @@ endif
 
 let s:debugpy_port = 6789
 let s:sessions = {}
+let s:ft = v:none
 
 
 function! s:PythonPathStr()
@@ -112,13 +113,10 @@ function! s:DebugpyAttach(name, default_name=v:none)
     if ! has_key(s:sessions, name)
         return vimspectorpy#warn("There is no session with name " . name)
     endif
-    try
-        let ft = &l:ft
-        let &l:ft = 'vimspectorpy'
-        call vimspector#LaunchWithSettings( #{ configuration: 'attach2port', port: s:sessions[name]})
-    finally
-        let &l:ft = ft
-    endtry
+    let s:ft = &l:ft
+    let &l:ft = 'vimspectorpy'
+    call vimspector#LaunchWithSettings( #{ configuration: 'attach2port', port: s:sessions[name]})
+    " See s:CustomiseUI() for restoring the filetype to the buffer
 endfunction
 
 
@@ -129,6 +127,20 @@ endfunction
 
 function! s:Nosetests(args)
     call s:DebugpyLaunch('nosetests', a:args, 'Nosetests', v:none, 1, 1, 1)
+endfunction
+
+
+augroup VimspectorpyUICustomization
+    autocmd!
+    autocmd User VimspectorUICreated call s:CustomiseUI()
+augroup END
+
+function! s:CustomiseUI()
+    call win_gotoid(g:vimspector_session_windows.code)
+    if s:ft isnot v:none
+        let &l:ft = s:ft
+        let s:ft = v:none
+    endif
 endfunction
 
 
