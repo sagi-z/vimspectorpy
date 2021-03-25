@@ -12,7 +12,7 @@ if ! exists("g:vimspectorpy#cmd_prefix")
 endif
 
 function! vimspectorpy#warn(msg)
-    echohl WarningMsg | echo a:msg | echohl None
+    echohl WarningMsg | echo "vimspectorpy: " . a:msg | echohl None
 endfunction
 
 
@@ -131,6 +131,19 @@ endfunction
 " * A virtualenv with ipython and debugpy.
 " * Some default configurations for vimspector python filetype.
 function! vimspectorpy#update()
+    if exists("g:vimspector_home")
+        let vimspector_home = g:vimspector_home
+    else
+        let vimspector_home = fnamemodify(g:vimspectorpy_home . "/../vimspector", ":p")
+    endif
+    if ! isdirectory(vimspector_home)
+        return vimspectorpy#warn("Please install vimspector first and then execute :VimspectorpyUpdate")
+    endif
+    try
+        exe 'VimspectorUpdate debugpy'
+    catch
+        return vimspectorpy#warn("Please enable the vimspector plugin first and then execute :VimspectorpyUpdate")
+    endtry
     if stridx(g:vimspectorpy_venv, g:vimspectorpy_home) != 0
         return vimspectorpy#warn("Please update your own VIRTUAL_ENV manually (pip3 install -U ipython debugpy)")
     endif
@@ -148,7 +161,8 @@ function! vimspectorpy#update()
     if v:shell_error
         throw "vimspectorpy#update failed to install/update ipython and debugpy: " . out
     endif
-    for base_config_dir in glob(g:vimspector_home . "/configurations/*", 1, 1)
+    let base_config_dir = ""
+    for base_config_dir in glob(vimspector_home . "/configurations/*", 1, 1)
         if isdirectory(base_config_dir)
             break
         endif
