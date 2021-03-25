@@ -37,22 +37,28 @@ Contents~
 Install~
                             *vimspectorpy-install*
 
-Either with plug.vim~
+Either with plug.vim in .vimrc~
 
 Of course make sure {vimspector} is installed:
 
-`Plug 'puremourning/vimspector'`
+  `Plug 'puremourning/vimspector'`
 
 And also add this:
 
-`Plug 'sagi-z/vimspectorpy', { 'do': { -> vimspectorpy#update() } }`
+  `Plug 'sagi-z/vimspectorpy', { 'do': { -> vimspectorpy#update() } }`
+
+Install and setup:
+>
+  :PlugInstall 
+  :VimspectorpyUpdate 
+<
 
 Or Manual~
 
 * Install {vimspector}.
 * Install {vimspectorpy}:
-`:!git clone https://github.com/sagi-z/vimspectorpy ~/.vim/plugin/vimspectorpy`
-`:VimspectorpyUpdate`
+  `:!git clone https://github.com/sagi-z/vimspectorpy ~/.vim/plugin/vimspectorpy`
+  `:VimspectorpyUpdate`
 
 
 ==============================================================================

@@ -19,7 +19,7 @@ This plugin adds some python customization to [vimspector]:
 
 ## Install
 
-### with plug.vim
+### with plug.vim in .vimrc
 
 Of course make sure [vimspector] is installed:
 
@@ -28,6 +28,14 @@ Of course make sure [vimspector] is installed:
 And also add this:
 
 `Plug 'sagi-z/vimspectorpy', { 'do': { -> vimspectorpy#update() } }`
+
+Install and setup:
+
+```vim
+:PlugInstall 
+:VimspectorpyUpdate 
+```
+
 
 ### Manual
 
