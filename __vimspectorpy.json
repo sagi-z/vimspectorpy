@@ -7,7 +7,8 @@
         "host": "localhost"
       },
       "configuration": {
-        "request": "attach"
+        "request": "attach",
+        "justMyCode": false
       },
       "breakpoints": {
         "exception": {

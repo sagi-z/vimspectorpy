@@ -14,6 +14,7 @@
         "request": "launch",
         "cwd": "${workspaceRoot}",
         "stopOnEntry": false,
+        "justMyCode": false,
         "python": "$Python",
         "program": "${file}",
         "args": [ "*${CommandLineArgs}" ]
