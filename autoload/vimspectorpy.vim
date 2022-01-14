@@ -156,7 +156,11 @@ function! vimspectorpy#update()
     if v:shell_error
         throw "vimspectorpy#update failed to install/update ipython and debugpy: " . out
     endif
-    let base_config_dir = g:vimspector_home . "/configurations"
+    if exists("g:vimspector_base_dir")
+        let base_config_dir = g:vimspector_base_dir . "/configurations"
+    else
+        let base_config_dir = g:vimspector_home . "/configurations"
+    endif
     for base_config_dir in glob(base_config_dir . "/*", 1, 1)
         if isdirectory(base_config_dir)
             break
