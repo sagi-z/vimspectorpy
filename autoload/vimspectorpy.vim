@@ -136,8 +136,8 @@ function! vimspectorpy#update()
     else
         let vimspector_base_dir = fnamemodify(g:vimspectorpy_home . "/../vimspector/configurations", ":p")
     endif
-    if ! isdirectory(vimspector_base_dir)
-        return vimspectorpy#warn("Please install vimspector first and then execute :VimspectorpyUpdate")
+    if ! exists("g:loaded_vimpector")  " typo copied from the vimspector plugin
+        return vimspectorpy#warn("Pleasu install/enable vimspector first and then execute :VimspectorpyUpdate")
     endif
     try
         exe 'VimspectorUpdate debugpy'
