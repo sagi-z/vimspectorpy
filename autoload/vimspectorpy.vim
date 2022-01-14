@@ -131,13 +131,8 @@ endfunction
 " * A virtualenv with ipython and debugpy.
 " * Some default configurations for vimspector python filetype.
 function! vimspectorpy#update()
-    if exists("g:vimspector_base_dir")
-        let vimspector_base_dir = g:vimspector_base_dir
-    else
-        let vimspector_base_dir = fnamemodify(g:vimspectorpy_home . "/../vimspector/configurations", ":p")
-    endif
-    if ! exists("g:loaded_vimpector")  " typo copied from the vimspector plugin
-        return vimspectorpy#warn("Pleasu install/enable vimspector first and then execute :VimspectorpyUpdate")
+    if ! exists("g:vimspector_home")
+        return vimspectorpy#warn("Please install/enable vimspector first and then execute :VimspectorpyUpdate")
     endif
     try
         exe 'VimspectorUpdate debugpy'
@@ -161,8 +156,8 @@ function! vimspectorpy#update()
     if v:shell_error
         throw "vimspectorpy#update failed to install/update ipython and debugpy: " . out
     endif
-    let base_config_dir = ""
-    for base_config_dir in glob(vimspector_base_dir . "/*", 1, 1)
+    let base_config_dir = g:vimspector_home . "/configurations"
+    for base_config_dir in glob(base_config_dir . "/*", 1, 1)
         if isdirectory(base_config_dir)
             break
         endif
