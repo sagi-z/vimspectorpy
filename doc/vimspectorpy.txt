@@ -1,5 +1,5 @@
 *vimspectorpy.txt*- python default configurations for vimspector
-  
+
 Description~
 
 Being able to simply debug a piece of code with {ipython} or set a breakpoint
@@ -49,8 +49,8 @@ And also add this:
 
 Install and setup:
 >
-  :PlugInstall 
-  :VimspectorpyUpdate 
+  :PlugInstall
+  :VimspectorpyUpdate
 <
 
 Or Manual~
@@ -203,6 +203,24 @@ You could choose 'rxvt' or force 'xterm' using:
 
 >
   let g:vimspectorpy#launcher = "rxvt"
+
+<
+                          *g:vimspectorpy#tmux#size*
+
+Set the size of the split opened, when using the tmux launcher. Default is
+equivalent to
+
+>
+  let g:vimspectorpy#tmux#size = 10
+<
+
+                          *g:vimspectorpy#tmux#split*
+
+Set the orientation of the split opened, when using the tmux launcher. Valid
+options are "v" for vertical and "h" for horizontal. Default is equivalent to
+
+>
+  let g:vimspectorpy#tmux#split = "v"
 <
 
 ==============================================================================
