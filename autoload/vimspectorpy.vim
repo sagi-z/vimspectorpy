@@ -155,11 +155,7 @@ function! vimspectorpy#update()
     if stridx(g:vimspectorpy_venv, g:vimspectorpy_home) != 0
         return vimspectorpy#warn("Please update your own VIRTUAL_ENV manually (pip3 install -U ipython debugpy)")
     endif
-    if executable('virtualenv')
-        let virtualenv = "virtualenv -p $(which python3)"
-    else
-        let virtualenv = "python3 -m venv"
-    endif
+    let virtualenv = "python3 -m venv"
     call mkdir(g:vimspectorpy_venv, "p")
     let out = system(virtualenv . " --clear " . g:vimspectorpy_venv)
     if v:shell_error
