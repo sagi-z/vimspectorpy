@@ -36,7 +36,6 @@ Install and setup:
 :VimspectorpyUpdate 
 ```
 
-
 ### Manual
 
 * Install [vimspector].
@@ -46,6 +45,18 @@ Install and setup:
 ```vim
 :VimspectorpyUpdate 
 ```
+
+## Uninstall
+
+* Remove the relevant entries from your *.vimrc* if you used *plug.vim*.
+* Remove the *vimspectorpy* directory in *~/.vim/plugin/* if you installed manually.
+
+Anyway, if you want to keep *vimspector*, then also do this (assuming
+*vimspector* is installed in *~/.vim/plugged/vimspector*):
+```
+find ~/.vim/plugged/vimspector/configurations -name '*vimspectorpy.json' -delete
+```
+
 
 ## Usage
 
