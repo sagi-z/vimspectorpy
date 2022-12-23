@@ -11,6 +11,13 @@ if ! exists("g:vimspectorpy#cmd_prefix")
     let g:vimspectorpy#cmd_prefix = ""
 endif
 
+if ! exists("g:vimspectorpy#tmux#split")
+    let g:vimspectorpy#tmux#split = "v"
+endif
+if ! exists("g:vimspectorpy#tmux#size")
+    let g:vimspectorpy#tmux#size = 10
+endif
+
 function! vimspectorpy#warn(msg)
     echohl WarningMsg | echo "vimspectorpy: " . a:msg | echohl None
 endfunction
@@ -46,7 +53,8 @@ function! vimspectorpy#tmux_launcher(cmd, success_cb, failure_cb)
     for f in glob(base_err_file . "/*" ,1 ,1)
         call delete(f)
     endfor
-    let cmd = "tmux split-window -l 10 -d -P -F '#{pane_id}' sh -c '". a:cmd .
+    let cmd = "tmux split-window -l ". g:vimspectorpy#tmux#size ." -" . g:vimspectorpy#tmux#split .
+                \" -d -P -F '#{pane_id}' sh -c '". a:cmd .
                 \" || tmux capture-pane -S - -E - -p -t $TMUX_PANE > " . base_err_file . ".${TMUX_PANE}'"
     let pane = trim(system(cmd))
     if v:shell_error
@@ -188,4 +196,3 @@ endfunction
 " restore compatible option
 let &cpo = s:save_cpo
 unlet s:save_cpo
-
